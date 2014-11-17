@@ -1,5 +1,5 @@
 (function () {
-  "use strict";
+  'use strict';
 
   var KEY = {
     TAB: 9,
@@ -628,8 +628,15 @@
         $select.onSelectCallback = $parse(attrs.onSelect);
         $select.onRemoveCallback = $parse(attrs.onRemove);
 
+        var transformedParser = false;
+
         //From view --> model
         ngModel.$parsers.unshift(function (inputValue) {
+          if (attrs.ngModelValueAttribute && !transformedParser) {
+            $select.parserResult.modelMapper = $parse($select.parserResult.itemName + '.' + attrs.ngModelValueAttribute);
+            transformedParser = true;
+          }
+
           var locals = {},
               result;
           if ($select.multiple){
@@ -651,6 +658,11 @@
 
         //From model --> view
         ngModel.$formatters.unshift(function (inputValue) {
+          if (attrs.ngModelValueAttribute && !transformedParser) {
+            $select.parserResult.modelMapper = $parse($select.parserResult.itemName + '.' + attrs.ngModelValueAttribute);
+            transformedParser = true;
+          }
+
           var data = $select.parserResult.source (scope, { $select : {search:''}}), //Overwrite $search 
               locals = {},
               result;
