@@ -637,6 +637,13 @@
             transformedParser = true;
           }
 
+          // Fallback for when setting a non-object value while we know we need an object with a specific attribute.
+          if (attrs.ngModelValueAttribute && !angular.isObject(inputValue)) {
+              var tmp = inputValue;
+              inputValue = {};
+              inputValue[attrs.ngModelValueAttribute] = tmp;
+          }
+
           var locals = {},
               result;
           if ($select.multiple){
